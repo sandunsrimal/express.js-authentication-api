@@ -1,0 +1,10 @@
+export { register } from './register.controller';
+export { login } from './login.controller';
+export { refreshToken } from './refresh-token.controller';
+export { updateProfile } from './update-profile.controller';
+export { changePassword } from './change-password.controller';
+export { getUserDetails } from './get-user.controller';
+export { logout } from './logout.controller';
+export { deleteAccount } from './delete-account.controller';
+export { verifyEmail, resendVerification } from './verify-email.controller';
+export { forgotPassword, resetPassword } from './forgot-password.controller';
