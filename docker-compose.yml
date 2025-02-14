@@ -3,14 +3,14 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:latest
-    container_name: connect-mongo
+    container_name: auth-mongo
     restart: always
     ports:
       - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: connectDB
+      MONGO_INITDB_DATABASE: authDB
     volumes:
       - mongo-data:/data/db
 
