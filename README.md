@@ -83,8 +83,9 @@ MICROSOFT_REDIRECT_URI=your_microsoft_redirect_uri
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd custom-authentication-api
+git clone https://github.com/sandunsrimal/express.js-authentication-api.git
+
+cd express.js-authentication-api
 ```
 
 2. Install dependencies:
@@ -112,6 +113,11 @@ Once the server is running, you can access the Swagger documentation at:
 ```
 http://localhost:5000/api-docs
 ```
+
+### API Documentation Screenshots
+
+![Authentication Endpoints](./docs/auth-endpoints.png)
+![Social Auth Endpoints](./docs/social-auth-endpoints.png)
 
 ## Available Scripts
 
