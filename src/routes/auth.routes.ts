@@ -85,6 +85,30 @@ router.post('/register', register);
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accessToken:
+ *                       type: string
+ *                       description: JWT access token
+ *                     refreshToken:
+ *                       type: string
+ *                       description: JWT refresh token
+ *                     isEmailVerified:
+ *                       type: boolean
+ *                       description: Email verification status
+ *                     role:
+ *                       type: string
+ *                       enum: [USER, ADMIN]
+ *                       description: User's role in the system
  *       401:
  *         description: Invalid credentials
  *       500:
@@ -97,6 +121,7 @@ router.post('/login', login);
  * /api/auth/refresh:
  *   post:
  *     summary: Refresh access token
+ *     description: Exchange a valid refresh token for a new access token and refresh token pair
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -109,13 +134,55 @@ router.post('/login', login);
  *             properties:
  *               refreshToken:
  *                 type: string
+ *                 description: Valid refresh token previously issued by the system
  *     responses:
  *       200:
- *         description: New access token generated
+ *         description: New token pair generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accessToken:
+ *                       type: string
+ *                       description: New JWT access token
+ *                     refreshToken:
+ *                       type: string
+ *                       description: New JWT refresh token
  *       401:
- *         description: Invalid refresh token
+ *         description: Invalid or expired refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid refresh token
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error refreshing token
+ *                 error:
+ *                   type: string
  */
 router.post('/refresh', refreshToken);
 
@@ -216,18 +283,83 @@ router.put('/change-password', protect(UserRole.USER), changePassword);
  * /api/auth/user:
  *   get:
  *     summary: Get user details
+ *     description: Retrieves the authenticated user's profile information
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *                     name:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     profilePicture:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "https://example.com/profile.jpg"
+ *                     isEmailVerified:
+ *                       type: boolean
+ *                       example: true
+ *                     registrationType:
+ *                       type: string
+ *                       enum: [EMAIL, GOOGLE, FACEBOOK, MICROSOFT]
+ *                       example: "EMAIL"
  *       401:
- *         description: Unauthorized
+ *         description: Unauthorized - Token missing, invalid or expired
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Not authorized to access this route"
  *       404:
  *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching user details"
+ *                 error:
+ *                   type: string
+ *                   example: "Database connection error"
  */
 router.get('/user', protect(UserRole.USER), getUserDetails);
 
@@ -276,10 +408,54 @@ router.delete('/delete-account', protect(UserRole.USER), deleteAccount);
  *     responses:
  *       200:
  *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Email verified successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                     accessToken:
+ *                       type: string
+ *                     refreshToken:
+ *                       type: string
  *       400:
  *         description: Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid or expired verification token
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error verifying email
+ *                 error:
+ *                   type: string
  */
 router.get('/verify-email/:token', verifyEmail);
 
@@ -294,10 +470,58 @@ router.get('/verify-email/:token', verifyEmail);
  *     responses:
  *       200:
  *         description: Verification email sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Verification email sent successfully
  *       400:
  *         description: Email already verified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Email is already verified
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: User not found
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Error sending verification email
+ *                 error:
+ *                   type: string
  */
 router.post('/resend-verification', protect(UserRole.USER), resendVerification);
 

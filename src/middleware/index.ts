@@ -5,7 +5,13 @@ import helmet from 'helmet';
 // Security middleware
 export const securityMiddleware = (app: Application) => {
   app.use(helmet());
-  app.use(cors());
+  app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    exposedHeaders: ['set-cookie']
+  }));
   app.use(express.json());
 };
 

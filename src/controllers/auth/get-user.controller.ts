@@ -20,7 +20,6 @@ export const getUserDetails: RequestHandler = async (
     res.status(200).json({
       success: true,
       data: {
-        userId: user._id,
         email: user.email,
         name: user.name,
         profilePicture: user.profilePicture,

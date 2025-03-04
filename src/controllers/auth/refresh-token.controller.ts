@@ -31,13 +31,25 @@ export const refreshToken: RequestHandler = async (req: Request, res: Response):
       return;
     }
 
-    // Generate new access token
+    // Generate new tokens
     const accessToken = user.generateAccessToken();
+    const newRefreshToken = user.generateRefreshToken();
+
+    // Save new refresh token
+    await RefreshToken.create({
+      token: newRefreshToken,
+      user: user._id,
+      expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000),
+    });
+
+    // Delete old refresh token
+    await RefreshToken.deleteOne({ token: refreshToken });
 
     res.status(200).json({
       success: true,
       data: {
         accessToken,
+        refreshToken: newRefreshToken,
       },
     });
   } catch (error) {

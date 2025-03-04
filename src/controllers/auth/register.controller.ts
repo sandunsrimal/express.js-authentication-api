@@ -1,6 +1,5 @@
 import { Request, Response, RequestHandler } from 'express';
 import User from '../../models/User';
-import mongoose from 'mongoose';
 import RefreshToken from '../../models/RefreshToken';
 import { RegistrationType } from '../../types/auth/user.interface';
 import crypto from 'crypto';
@@ -21,7 +20,7 @@ export const isPasswordValid = (password: string): { isValid: boolean; message: 
     return { isValid: false, message: 'Password must contain at least one lowercase letter' };
   }
 
-  if (!/[0-9]/.test(password)) {
+  if (!/\d/.test(password)) {
     return { isValid: false, message: 'Password must contain at least one number' };
   }
 
@@ -82,11 +81,11 @@ export const register: RequestHandler = async (req: Request, res: Response): Pro
     await VerificationToken.create({
       userId: user._id,
       token: verificationToken,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
     // Send verification email
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
     await sendVerificationEmail(user.email, user.name, verificationLink);
 
     // Generate tokens
@@ -97,15 +96,13 @@ export const register: RequestHandler = async (req: Request, res: Response): Pro
     await RefreshToken.create({
       token: refreshToken,
       user: user._id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000),
     });
 
     res.status(201).json({
       success: true,
       data: {
-        userId: user.userId,
         accessToken,
-        refreshToken,
         isEmailVerified: user.isEmailVerified,
       },
     });

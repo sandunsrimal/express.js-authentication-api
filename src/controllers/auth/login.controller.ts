@@ -38,16 +38,16 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
     await RefreshToken.create({
       token: refreshToken,
       user: user._id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000),
     });
 
     res.status(200).json({
       success: true,
       data: {
-        userId: user.userId,
         accessToken,
         refreshToken,
         isEmailVerified: user.isEmailVerified,
+        role: user.role,
       },
     });
   } catch (error) {

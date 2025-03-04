@@ -7,8 +7,7 @@ export const protect = (...roles: UserRole[]): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // 1. Token validation
-      const authHeader = req.headers.authorization;
-      const token = authHeader && authHeader.split(' ')[1];
+      const token = req.headers.authorization?.split(' ')[1];
 
       if (!token) {
         res.status(401).json({

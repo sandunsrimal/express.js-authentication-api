@@ -1,4 +1,4 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
 import swaggerUi from 'swagger-ui-express';

@@ -103,13 +103,13 @@ userSchema.methods.generateAccessToken = function (): string {
       role: this.role,
     },
     process.env.JWT_ACCESS_SECRET as string,
-    { expiresIn: '15m' }
+    { expiresIn: '5m' }
   );
 };
 
 // Generate refresh token
 userSchema.methods.generateRefreshToken = function (): string {
-  return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '7d' });
+  return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '4h' });
 };
 
 export default mongoose.model<IUser>('User', userSchema);
